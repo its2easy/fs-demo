@@ -1,4 +1,5 @@
 <?php
+// main menu item
 add_action('admin_menu', 'theme_likes_dashboard_menu');
 function theme_likes_dashboard_menu() {
 	add_submenu_page(
@@ -11,6 +12,15 @@ function theme_likes_dashboard_menu() {
 	);
 }
 
+// page template
 function theme_likes_dashboard_page() {
-	echo '<div class="wrap"><h1>Статистика лайков</h1></div>';
+	$table = new Theme_Likes_List_Table();
+	$table->prepare_items();
+
+	echo '<div class="wrap">';
+	echo '<h1>Статистика лайков</h1>';
+
+	$table->display();
+
+	echo '</div>';
 }
