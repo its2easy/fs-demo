@@ -5,6 +5,8 @@ if (!class_exists('WP_List_Table')) {
 
 // https://wp-kama.ru/function/wp_list_table
 class Theme_Likes_List_Table extends WP_List_Table {
+	private array $votes_summary = [];
+
 	public function __construct() {
 		parent::__construct([
 			'singular' => 'post',
@@ -23,34 +25,31 @@ class Theme_Likes_List_Table extends WP_List_Table {
 	public function prepare_items() {
 		$per_page     = 20;
 		$current_page = $this->get_pagenum();
-
 		$query = new WP_Query([
 			'post_type'      => 'post',
 			'post_status'    => 'any',
 			'posts_per_page' => $per_page,
 			'paged'          => $current_page,
 		]);
+
 		$this->items = $query->posts;
-
-		$this->_column_headers = [$this->get_columns(), [], []]; // important, columns list is empty without it
-
+		$this->votes_summary = Theme_Likes_Repository::get_votes_summary(wp_list_pluck($this->items, 'ID'));
 		$this->set_pagination_args([
 			'total_items' => $query->found_posts,
 			'per_page'    => $per_page,
 		]);
+		$this->_column_headers = [$this->get_columns(), [], []]; // important, columns list is empty without it
 	}
 
 	protected function column_title($post) {
 		return '<a href="' . esc_url(get_edit_post_link($post->ID)) . '">' . esc_html(get_the_title($post)) . '</a>';
 	}
 
-	// sum of the likes for a post
 	protected function column_likes($post) {
-		return '0';
+		return $this->votes_summary[$post->ID]['likes'] ?? 0;
 	}
 
-	// sum of the dislikes for a post
 	protected function column_dislikes($post) {
-		return '0';
+		return $this->votes_summary[$post->ID]['dislikes'] ?? 0;
 	}
 }

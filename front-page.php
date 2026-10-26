@@ -20,9 +20,12 @@ get_header();
                     );
 
                     if ($front_query->have_posts()) :
+                        // one sql query for all the posts on the page
+                        $votes_summary = Theme_Likes_Repository::get_votes_summary(wp_list_pluck($front_query->posts, 'ID'));
                         while ($front_query->have_posts()) :
                             $front_query->the_post();
-                            get_template_part('partials/post-preview');
+                            // could be improved with passing only the votes for a single post
+                            get_template_part('partials/post-preview', '', ['votes_summary' => $votes_summary]);
                         endwhile;
                         wp_reset_postdata();
                     endif;

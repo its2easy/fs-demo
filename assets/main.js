@@ -9,11 +9,16 @@ document.addEventListener('DOMContentLoaded', () => {
 		button.addEventListener('click', () => {
 			const likesBlock = button.closest('[data-js="post-likes"]');
 			const countEl = likesBlock.querySelector('[data-js="like-count"]');
+			const actionButtons = likesBlock.querySelectorAll('[data-js="like-action"]');
 
 			const formData = new FormData();
 			formData.append('action', ajaxAction);
 			formData.append('post_id', likesBlock.dataset.postId);
 			formData.append('action_type', button.dataset.action);
+
+			actionButtons.forEach((btn) => {
+				btn.disabled = true;
+			});
 
 			fetch(phpData.ajax_url, {
 				method: 'POST',
@@ -33,7 +38,12 @@ document.addEventListener('DOMContentLoaded', () => {
 					countEl.textContent = likesCount;
 					countEl.classList.toggle(negative_likes_class, likesCount < 0);
 				})
-				.catch((error) => console.error(error));
+				.catch((error) => console.error(error))
+				.finally(() => {
+					actionButtons.forEach((btn) => {
+						btn.disabled = false;
+					});
+				});
 		});
 	});
 });

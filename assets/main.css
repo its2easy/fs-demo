@@ -293,6 +293,10 @@ a{
 .post-preview__likes-btn:hover{
 	box-shadow: 0 0 10px 1px var(--color-green);
 }
+.post-preview__likes-btn:disabled{
+	opacity: 0.6;
+	cursor: default;
+}
 .post-preview__likes-btn_minus{
 	background-color: var(--color-orange);
 }
